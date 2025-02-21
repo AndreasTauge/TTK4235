@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <time.h>
+#include "driver/elevator_control.h"
+#include "driver/order_manager.h"
 #include "driver/elevio.h"
-#include "order_manager.h"
-#include "elevator_control.h"
 
 
 int main(){
@@ -18,6 +18,7 @@ int main(){
     int count=0;
     Order** orders = NULL;
     orders = malloc(capacity * sizeof(Order*));
+    add_order(&orders, &count, &capacity, 1, 1)
 
     while(1){
         int floor = elevio_floorSensor();
@@ -25,14 +26,6 @@ int main(){
             elevio_floorIndicator(floor);
         }
             
-
-        if(floor == 0){
-            elevio_motorDirection(DIRN_UP);
-        }
-
-        if(floor == N_FLOORS-1){
-            elevio_motorDirection(DIRN_DOWN);
-        }
 
         for(int f = 0; f < N_FLOORS; f++){
             for(int b = 0; b < N_BUTTONS; b++){
@@ -56,7 +49,7 @@ int main(){
             set_direction(orders[i]->floor, floor);
             if (orders[i]->floor == floor) {
                 elevio_motorDirection(DIRN_STOP);
-                delete_order(&orders, &count, &capacity, orders[i]->floor, orders[i]->button);
+                delete_order(orders, &count, &capacity, orders[i]->floor, orders[i]->button);
             }
         }
         

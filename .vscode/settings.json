@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-
-        "signal.h": "c",
-        "order_manager.h": "c"
-
-    }
-}
