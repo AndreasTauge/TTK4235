@@ -3,10 +3,6 @@
 #include "elevio.h"
 
 
-int stopped=0;
-int current_floor;
-Order** orders;
-
 void add_order(Order*** orders, int* count, int* capacity, int floor, ButtonType button) {
     if (*count >= *capacity) {
         *capacity *= 2;
@@ -41,4 +37,11 @@ void delete_order(Order** orders, int* count, int* capacity, int floor, ButtonTy
     }
 }
 
+void delete_all_orders(Order** orders, int* count) {
+    for (int i=0; i<*count; i++) {
+        free(orders[i]);
+        orders[i] = NULL;
+    }
+    *count=0;
+};
 
