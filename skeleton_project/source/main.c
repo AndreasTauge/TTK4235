@@ -22,6 +22,10 @@ int main(){
             elevio_floorIndicator(floor);
         }
 
+        if (count == 0) {
+            elevio_motorDirection(DIRN_STOP);  // stop motor hvis ingen bestillinger
+        }
+
         if(floor == 0){
             elevio_motorDirection(DIRN_UP);
         }
@@ -33,7 +37,7 @@ int main(){
         for(int f = 0; f < N_FLOORS; f++){
             for(int b = 0; b < N_BUTTONS; b++){
                 int btnPressed = elevio_callButton(f, b);
-                if (stopped==0) {
+                if (stopped==0 && btnPressed) {
                     add_order(&orders, &count, &capacity, f, b);
                 }
             }
@@ -53,7 +57,7 @@ int main(){
         for (int i=0; i<count; i++) {
             set_direction(orders[i]->floor, floor);
             elevio_buttonLamp(orders[i]->floor, orders[i]->button, 1);
-            while (orders[i]->floor != floor) {
+            while (orders[i]->floor != floor) {  // maybe slight problem here, this might be stuck with orders preventing all the other functions above from running 
                 continue;
             }
             handle_floor_order();
