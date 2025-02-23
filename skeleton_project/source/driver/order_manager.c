@@ -3,6 +3,13 @@
 #include "elevio.h"
 
 
+int compare_floors(const void* a, const void* b) {
+    Order* orderA = *(Order**)a;  // Dereference to get `Order*`
+    Order* orderB = *(Order**)b;
+    return orderA->floor - orderB->floor;  // Compare floors
+}
+
+
 void add_order(Order*** orders, int* count, int* capacity, int floor, ButtonType button) {
     if (*count >= *capacity) {
         *capacity *= 2;
@@ -44,4 +51,19 @@ void delete_all_orders(Order** orders, int* count) {
     }
     *count=0;
 };
+
+
+void sort_orders(Order** orders, MotorDirection dir, int count) {
+    if (dir == DIRN_UP) {
+        qsort(orders, count, sizeof(Order*), compare_floors);  // sort in ascending order 
+    } else if (dir == DIRN_DOWN) {
+        qsort(orders, count, sizeof(Order*), compare_floors);  // sort in descending order 
+
+        for (int i = 0; i < count / 2; i++) {
+            Order* temp = orders[i];
+            orders[i] = orders[count - i - 1];
+            orders[count - i - 1] = temp;
+        }
+    }
+}
 
