@@ -40,7 +40,8 @@ void delete_order(Order** orders, int* count, int* capacity, int floor, ButtonTy
             for (int j = i; j < (*count) - 1; j++) {
                 orders[j] = orders[j + 1];  
             }
-            *count--;
+            orders[*count - 1] = NULL; 
+            (*count)--;
         }
     }
 }

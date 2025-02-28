@@ -1,11 +1,13 @@
 #include "elevio.h"
 #include <time.h>
 
-void set_direction(int floor, int current_floor) {
+MotorDirection set_direction(int floor, int current_floor) {
     if (current_floor > floor) {
         elevio_motorDirection(DIRN_DOWN);
     } else if (current_floor < floor) {
         elevio_motorDirection(DIRN_UP);
+    } else {
+        elevio_motorDirection(DIRN_STOP);
     }
 }
 
