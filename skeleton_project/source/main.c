@@ -1,3 +1,4 @@
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -5,6 +6,7 @@
 #include "driver/elevator_control.h"
 #include "driver/order_manager.h"
 #include "driver/elevio.h"
+#include "driver/timer.h"
 
 
 int main(){
@@ -15,6 +17,7 @@ int main(){
     orders = malloc(capacity * sizeof(Order*));
     int stopped = 0;
     int current_floor =0;
+    int timer_active =0;
 
     for(int f = 0; f < N_FLOORS; f++){
         for(int b = 0; b < N_BUTTONS; b++){
@@ -30,6 +33,8 @@ int main(){
         if (floor >= 0 && floor < N_FLOORS) {
             elevio_floorIndicator(floor);
             current_floor = floor;
+        } else {
+            elevio_motorDirection(DIRN_DOWN);
         }
 
         if (count == 0) {
@@ -63,9 +68,17 @@ int main(){
         }
 
         if (count>0 && orders[0]->floor == current_floor) {
-            handle_floor_order();
-            delete_order(orders, &count, &capacity, orders[0]->floor, orders[0]->button);
-        }
+            if (!timer_active) {
+                timer_start();
+                handle_floor_order();
+                timer_active = 1;
+            }
+            if (timer_expired()) {
+                delete_order(orders, &count, &capacity, orders[0]->floor, orders[0]->button);
+                elevio_doorOpenLamp(0);
+                timer_active = 0;
+            }
+            }
 
         for (int i=0; i<count; i++) {
             elevio_buttonLamp(orders[i]->floor, orders[i]->button, 1);

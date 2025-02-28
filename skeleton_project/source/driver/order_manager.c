@@ -34,7 +34,7 @@ void add_order(Order*** orders, int* count, int* capacity, int floor, ButtonType
 
 
 void delete_order(Order** orders, int* count, int* capacity, int floor, ButtonType button) {
-    for (int i=0; i<*count; i++) {
+    for (int i=0; i<*count;) {
         if (orders[i]->floor == floor) {
             free(orders[i]);
             for (int j = i; j < (*count) - 1; j++) {
@@ -42,6 +42,8 @@ void delete_order(Order** orders, int* count, int* capacity, int floor, ButtonTy
             }
             orders[*count - 1] = NULL; 
             (*count)--;
+        } else {
+            i++;
         }
     }
 }

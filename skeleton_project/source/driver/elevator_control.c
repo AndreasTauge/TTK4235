@@ -1,5 +1,5 @@
 #include "elevio.h"
-#include <time.h>
+#include "timer.h"
 
 MotorDirection set_direction(int floor, int current_floor) {
     if (current_floor > floor) {
@@ -18,7 +18,4 @@ void handle_floor_order() {
         elevio_stopLamp(1);
     }
     elevio_stopLamp(0);
-    nanosleep(&(struct timespec){3, 0}, NULL);
-    elevio_doorOpenLamp(0);
-    
 }
