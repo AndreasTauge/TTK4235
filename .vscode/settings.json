@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "order_manager.h": "c",
+        "time.h": "c"
+    }
+}
+

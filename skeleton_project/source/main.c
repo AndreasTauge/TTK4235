@@ -9,29 +9,37 @@
 
 int main(){
     elevio_init();
-    
-    printf("=== Example Program ===\n");
-    printf("Press the stop button on the elevator panel to exit\n");
-
-    elevio_motorDirection(DIRN_UP);
     int capacity=5;
     int count=0;
     Order** orders = NULL;
     orders = malloc(capacity * sizeof(Order*));
-    add_order(&orders, &count, &capacity, 1, 1)
+    int stopped = 0;
 
     while(1){
         int floor = elevio_floorSensor();
         if (floor >= 0 && floor < N_FLOORS) {
             elevio_floorIndicator(floor);
         }
-            
+
+
+        if (count == 0) {
+            elevio_motorDirection(DIRN_STOP);  // stop motor hvis ingen bestillinger
+        }
+
+        if(floor == 0){
+            elevio_motorDirection(DIRN_UP);
+        }
+
+        if(floor == N_FLOORS-1){
+            elevio_motorDirection(DIRN_DOWN);
+        }
 
         for(int f = 0; f < N_FLOORS; f++){
             for(int b = 0; b < N_BUTTONS; b++){
                 int btnPressed = elevio_callButton(f, b);
-                add_order(&orders, &count, &capacity, 2, 1);
-                elevio_buttonLamp(f, b, btnPressed);
+                if (stopped==0 && btnPressed) {
+                    add_order(&orders, &count, &capacity, f, b);
+                }
             }
         }
 
@@ -43,15 +51,25 @@ int main(){
         
         if(elevio_stopButton()){
             elevio_motorDirection(DIRN_STOP);
-            break;
+            delete_all_orders(orders, &count);
+            stopped = 1;
         }
+
+        if (count != 0) {
+            MotorDirection dir = set_direction(orders[0]->floor, floor);
+            //sort_orders(orders, count, dir);
+        }
+
+        if (orders[0]->floor == floor && count>0) {
+            handle_floor_order();
+            delete_order(&orders, &count, &capacity, orders[0]->floor, orders[0]->button);
+        }
+
         for (int i=0; i<count; i++) {
-            set_direction(orders[i]->floor, floor);
-            if (orders[i]->floor == floor) {
-                elevio_motorDirection(DIRN_STOP);
-                delete_order(orders, &count, &capacity, orders[i]->floor, orders[i]->button);
+            elevio_buttonLamp(orders[i]->floor, orders[i]->button, 1);
+
+           
             }
-        }
         
         nanosleep(&(struct timespec){0, 20*1000*1000}, NULL);
     }
