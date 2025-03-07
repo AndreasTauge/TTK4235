@@ -17,30 +17,30 @@ int main(){
     orders = malloc(capacity * sizeof(Order*));
     int stopped = 0;
     int current_floor =-1;
-    int timer_active =0;
-    int timer_active2 = 0;
     MotorDirection dir;
+
+    Timer doorTimerStop = {0, 0};
+    Timer doorTimerFloor = {0, 0};
 
     for(int f = 0; f < N_FLOORS; f++){
         for(int b = 0; b < N_BUTTONS; b++){
             elevio_buttonLamp(f, b, 0);
         }}
-/*
-    add_order(&orders, &count, &capacity, 2, BUTTON_CAB);
-    add_order(&orders, &count, &capacity, 3, BUTTON_CAB);
-    add_order(&orders, &count, &capacity, 1, BUTTON_CAB);
-*/
+
     while(1){
         int floor = elevio_floorSensor();
         if (floor >= 0 && floor < N_FLOORS) {
             elevio_floorIndicator(floor);
             current_floor = floor;
+
+
             if (stopped) {
                 elevio_doorOpenLamp(1);
-                timer_start(2);
+                timer_start(&doorTimerStop);
             }
-            else if (timer_expired(2)) {
+            else if (timer_expired(&doorTimerStop, 3)) {
                 elevio_doorOpenLamp(0);
+                timer_stop(&doorTimerStop);
             }
             
         } 
@@ -86,16 +86,15 @@ int main(){
         }
 
         if (count>0 && orders[0]->floor == floor) {
-            if (!timer_active) {
-                timer_start(1);
+            if (!doorTimerFloor.active) {
+                timer_start(&doorTimerFloor);
                 handle_floor_order();
-                timer_active = 1;
             }
-            if (timer_expired(1)) {
+            else if (timer_expired(&doorTimerFloor, 3)) {
                 elevio_buttonLamp(orders[0]->floor, orders[0]->button, 0);
                 delete_order(orders, &count, &capacity, orders[0]->floor, orders[0]->button);
                 elevio_doorOpenLamp(0);
-                timer_active = 0;
+                timer_stop(&doorTimerFloor);
             }
             }
 
