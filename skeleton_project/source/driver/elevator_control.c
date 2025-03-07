@@ -8,15 +8,7 @@ MotorDirection set_direction(int floor, int current_floor, MotorDirection dir) {
     } else if (current_floor < floor) {
         elevio_motorDirection(DIRN_UP);
         return DIRN_UP;
-    } else if (current_floor == floor) {
-        if (dir == DIRN_UP) {
-            elevio_motorDirection(DIRN_DOWN);
-            return DIRN_DOWN;
-        } else if (dir == DIRN_DOWN) {
-            elevio_motorDirection(DIRN_UP);
-            return DIRN_UP;
-        }
-        }
+    } 
     else {
         elevio_motorDirection(DIRN_STOP);
         return DIRN_STOP;

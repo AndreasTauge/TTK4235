@@ -18,6 +18,7 @@ int main(){
     int stopped = 0;
     int current_floor =-1;
     MotorDirection dir;
+    MotorDirection old_dir;
 
     Timer doorTimerStop = {0, 0};
     Timer doorTimerFloor = {0, 0};
@@ -38,7 +39,7 @@ int main(){
                 elevio_doorOpenLamp(1);
                 timer_start(&doorTimerStop);
             }
-            else if (timer_expired(&doorTimerStop, 3)) {
+            else if (timer_expired(&doorTimerStop)) {
                 elevio_doorOpenLamp(0);
                 timer_stop(&doorTimerStop);
             }
@@ -61,12 +62,6 @@ int main(){
                 }
             }
         }
-
-        if(elevio_obstruction()){
-            elevio_stopLamp(1);
-        } else {
-            elevio_stopLamp(0);
-        }
         
         if(elevio_stopButton()){
             elevio_stopLamp(1);
@@ -76,6 +71,7 @@ int main(){
             }
             delete_all_orders(orders, &count);
             stopped = 1;
+            old_dir = dir;
         } else {
             stopped = 0;
             elevio_stopLamp(0);
@@ -85,19 +81,29 @@ int main(){
             dir = set_direction(orders[0]->floor, current_floor, dir);
         }
 
-        if (count>0 && orders[0]->floor == floor) {
-            if (!doorTimerFloor.active) {
+        if (count>0 && orders[0]->floor == floor) {  // doesnt work if elevator is stopped at e.g between floor 2 and 3 and you press 2 
+            if (elevio_obstruction()) {
+                timer_start(&doorTimerFloor);
+            }
+            else if (!doorTimerFloor.active) {
                 timer_start(&doorTimerFloor);
                 handle_floor_order();
             }
-            else if (timer_expired(&doorTimerFloor, 3)) {
+            else if (timer_expired(&doorTimerFloor)) {
                 elevio_buttonLamp(orders[0]->floor, orders[0]->button, 0);
                 delete_order(orders, &count, &capacity, orders[0]->floor, orders[0]->button);
                 sort_orders(orders, dir, count, current_floor);
                 elevio_doorOpenLamp(0);
                 timer_stop(&doorTimerFloor);
+            } 
             }
+        else if (count != 0 && orders[0]->floor == current_floor) {
+            if (old_dir == DIRN_DOWN) {
+                elevio_motorDirection(DIRN_UP);
+            } else if (old_dir == DIRN_UP) {
+                elevio_motorDirection(DIRN_DOWN);
             }
+        }
 
         for (int i=0; i<count; i++) {
             elevio_buttonLamp(orders[i]->floor, orders[i]->button, 1);
