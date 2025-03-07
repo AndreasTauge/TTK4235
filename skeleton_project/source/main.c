@@ -57,6 +57,7 @@ int main(){
                 int btnPressed = elevio_callButton(f, b);
                 if (stopped==0 && btnPressed && current_floor != -1) {
                     add_order(&orders, &count, &capacity, f, b);
+                    sort_orders(orders, dir, count, current_floor);
                 }
             }
         }
@@ -82,7 +83,6 @@ int main(){
 
         if (count != 0 && current_floor != -1) {
             dir = set_direction(orders[0]->floor, current_floor, dir);
-            //sort_orders(orders, count, dir);
         }
 
         if (count>0 && orders[0]->floor == floor) {
@@ -93,6 +93,7 @@ int main(){
             else if (timer_expired(&doorTimerFloor, 3)) {
                 elevio_buttonLamp(orders[0]->floor, orders[0]->button, 0);
                 delete_order(orders, &count, &capacity, orders[0]->floor, orders[0]->button);
+                sort_orders(orders, dir, count, current_floor);
                 elevio_doorOpenLamp(0);
                 timer_stop(&doorTimerFloor);
             }

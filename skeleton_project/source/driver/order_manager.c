@@ -3,14 +3,6 @@
 #include "order_manager.h"
 #include "elevio.h"
 
-
-int compare_floors(const void* a, const void* b) {
-    Order* orderA = *(Order**)a;  // Dereference to get `Order*`
-    Order* orderB = *(Order**)b;
-    return orderA->floor - orderB->floor;  // Compare floors
-}
-
-
 void add_order(Order*** orders, int* count, int* capacity, int floor, ButtonType button) {
     if (*count >= *capacity) {
         *capacity *= 2;
@@ -57,17 +49,57 @@ void delete_all_orders(Order** orders, int* count) {
 };
 
 
-void sort_orders(Order** orders, MotorDirection dir, int count) {
-    if (dir == DIRN_UP) {
-        qsort(orders, count, sizeof(Order*), compare_floors);  // sort in ascending order 
-    } else if (dir == DIRN_DOWN) {
-        qsort(orders, count, sizeof(Order*), compare_floors);  // sort in descending order 
-
-        for (int i = 0; i < count / 2; i++) {
-            Order* temp = orders[i];
-            orders[i] = orders[count - i - 1];
-            orders[count - i - 1] = temp;
-        }
-    }
+int compare_floors(const void* a, const void* b) {
+    Order* orderA = *(Order**)a;
+    Order* orderB = *(Order**)b;
+    return orderA->floor - orderB->floor;
 }
 
+void sort_orders(Order** orders, int count, int currentFloor, MotorDirection dir) {
+    if (count <= 1) return; // No need to sort 0 or 1 order
+
+
+    Order** upList   = malloc(count * sizeof(Order*));
+    Order** downList = malloc(count * sizeof(Order*));
+    if (!upList || !downList) {
+        return;
+    }
+
+    int upCount = 0;
+    int downCount = 0;
+
+    for (int i = 0; i < count; i++) {
+        if (orders[i]->floor >= currentFloor) {
+            upList[upCount++] = orders[i];
+        } else {
+            downList[downCount++] = orders[i];
+        }
+    }
+
+    qsort(upList,   upCount,   sizeof(Order*), compare_floors);
+    qsort(downList, downCount, sizeof(Order*), compare_floors);
+
+    int idx = 0;
+    if (dir == DIRN_UP) {
+        for (int i = 0; i < upCount; i++) {
+            orders[idx++] = upList[i];
+        }
+        for (int i = downCount - 1; i >= 0; i--) {
+            orders[idx++] = downList[i];
+        }
+    }
+    else if (dir == DIRN_DOWN) {
+        for (int i = downCount - 1; i >= 0; i--) {
+            orders[idx++] = downList[i];
+        }
+        for (int i = 0; i < upCount; i++) {
+            orders[idx++] = upList[i];
+        }
+    }
+    else {
+        qsort(orders, count, sizeof(Order*), compare_floors);
+    }
+
+    free(upList);
+    free(downList);
+}
