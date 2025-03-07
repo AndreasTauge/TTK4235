@@ -33,24 +33,12 @@ int main(){
         if (floor >= 0 && floor < N_FLOORS) {
             elevio_floorIndicator(floor);
             current_floor = floor;
-
-
-            if (stopped) {
-                elevio_doorOpenLamp(1);
-                timer_start(&doorTimerStop);
-            }
-            else if (timer_expired(&doorTimerStop)) {
-                elevio_doorOpenLamp(0);
-                timer_stop(&doorTimerStop);
-            }
             
         } 
         if (current_floor == -1) {
             elevio_motorDirection(DIRN_DOWN);
-            dir = DIRN_DOWN;
         } else if (count == 0) {
             elevio_motorDirection(DIRN_STOP);  // stop motor hvis ingen bestillinger
-            elevio_doorOpenLamp(0);
         }
 
         for(int f = 0; f < N_FLOORS; f++){
@@ -79,9 +67,17 @@ int main(){
 
         if (count != 0 && current_floor != -1) {
             dir = set_direction(orders[0]->floor, current_floor, dir);
+            sort_orders(orders, dir, count, current_floor);
         }
 
-        if (count>0 && orders[0]->floor == floor) {  // doesnt work if elevator is stopped at e.g between floor 2 and 3 and you press 2 
+        if (stopped && floor >= 0 && floor < N_FLOORS) {
+            elevio_doorOpenLamp(1);
+            timer_start(&doorTimerFloor);
+        } else if (timer_expired(&doorTimerFloor)) {
+            elevio_doorOpenLamp(0);
+        }
+
+        if (count>0 && orders[0]->floor == floor) {  
             if (elevio_obstruction()) {
                 timer_start(&doorTimerFloor);
             }
