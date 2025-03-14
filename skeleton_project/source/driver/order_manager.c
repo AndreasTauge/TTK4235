@@ -3,6 +3,7 @@
 #include "order_manager.h"
 #include "elevio.h"
 
+// Dynamisk allokert order list der man kan øke størrelsen avhengig av hvor mange orders det er 
 void add_order(Order*** orders, int* count, int* capacity, int floor, ButtonType button) {
     if (*count >= *capacity) {
         *capacity *= 2;
