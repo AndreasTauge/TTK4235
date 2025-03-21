@@ -1,4 +1,5 @@
 # Kor er UARTane kobla, dvs kva pins.
+# UART pinner, [RTS, TXD, CTS, RXD] P0.0(5 thru 8)
 
 FAMILY := nrf52
 SOURCES := main.c # Fill inn missing sources
