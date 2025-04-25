@@ -1,5 +1,6 @@
 #include "uart.h"
 #include <stdint.h>
+#include <stdio.h>
 #include <sys/types.h> 
 
 //BUTTONS1,4 = P0.13,16
@@ -59,20 +60,22 @@ ssize_t _write(int fd, const void *buf, size_t count){
 
 int main () {
 
-button_init();
-uart_init();
-int leds_on = 0;
+	uart_init();
+	button_init();
+	int leds_on = 0;
+
+	iprintf("The average grade in TTK%d was in %d was: %c\n\r", 4235, 2022, 'B');
 
 
-while(1){
-int button1_pressed = !(GPIO->IN & (1 << __BUTTON_1_PIN__));
-int button2_pressed = !(GPIO->IN & (1 << __BUTTON_2_PIN__));
-if(button1_pressed){
-	uart_send('A');
-}
-else if(button2_pressed){
-	uart_send('B');
-}
+	while(1){
+		int button1_pressed = !(GPIO->IN & (1 << __BUTTON_1_PIN__));
+		int button2_pressed = !(GPIO->IN & (1 << __BUTTON_2_PIN__));
+		if(button1_pressed){
+			uart_send('A');
+		}
+		else if(button2_pressed){
+			uart_send('B');
+		}
 
 
 if (uart_read() != '\0'){

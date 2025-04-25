@@ -45,13 +45,13 @@ typedef struct {
 } NRF_UART_REG;
 
 
+
 #define UART_TX_PIN 6
 #define UART_RX_PIN 8
 
 void uart_init() {
-    // Konfigurer GPIO for output og input
-    GPIO->PIN_CNF[UART_TX_PIN] = (1 << 0); // Output
-    GPIO->PIN_CNF[UART_RX_PIN] = (0 << 0); // Input
+    GPIO->PIN_CNF[UART_TX_PIN] = (0 << 0); // Output
+    GPIO->PIN_CNF[UART_RX_PIN] = (1 << 0); // Input
 
     // Koble GPIO-pinnene til UART
     UART->PSELTXD = UART_TX_PIN;
@@ -63,16 +63,14 @@ void uart_init() {
 
     UART->BAUDRATE = 9600; 
 
-    // Aktiver UART
     UART->ENABLE = 4; 
 
-    // Start mottak
     UART->TASKS_STARTRX = 1;
 }
 
 void uart_send(char letter){
+    UART->TASKS_STARTTX = 1;
 	UART->TXD = letter;
-	UART->TASKS_STARTTX = 1;
 	while(!UART->EVENTS_TXDRDY);
 
 	UART->EVENTS_TXDRDY = 0;
@@ -81,12 +79,13 @@ void uart_send(char letter){
 
 char uart_read(){
 
-	UART->EVENTS_RXDRDY = 0;
-	if (UART->RXD == 0){
-		return '\0';
-	}
+	if(!UART->EVENTS_RXDRDY) {
+        return '\0';
+    }
 
-	return UART->RXD;
+    UART->EVENTS_RXDRDY = 0;
+
+    return (char)UART->RXD;
 }
 
 void uart_send_str(char ** str){
