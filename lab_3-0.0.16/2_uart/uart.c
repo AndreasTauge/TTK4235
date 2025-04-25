@@ -53,10 +53,10 @@ void uart_init() {
     UART->PSELRTS = 0xFFFFFFFF;
     UART->PSELCTS = 0xFFFFFFFF;
 
-    UART->BAUDRATE = 9600; 
+    UART->BAUDRATE = 0x00275000; 
 
     // Aktiver UART
-    UART->ENABLE = 8; 
+    UART->ENABLE = 4; 
 
     // Start mottak
     UART->TASKS_STARTRX = 1;
