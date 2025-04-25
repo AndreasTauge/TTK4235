@@ -18,24 +18,32 @@ typedef struct {
     volatile uint32_t EVENTS_RXDRDY;
     volatile uint32_t RESERVED2[4];
     volatile uint32_t EVENTS_TXDRDY;
-    volatile uint32_t RESERVED3;
+    volatile uint32_t RESERVED3[1];
     volatile uint32_t EVENTS_ERROR;
     volatile uint32_t RESERVED4[7];
     volatile uint32_t EVENTS_RXTO;
     volatile uint32_t RESERVED5[46];
+    volatile uint32_t SHORTS;
+    volatile uint32_t RESERVED6[64];
+    volatile uint32_t INTENSET;
+    volatile uint32_t INTENCLR;
+    volatile uint32_t RESERVED7[93];
+    volatile uint32_t ERRORSRC;
+    volatile uint32_t RESERVED8[31];
     volatile uint32_t ENABLE;
-    volatile uint32_t RESERVED6;
+    volatile uint32_t RESERVED9[1];
     volatile uint32_t PSELRTS;
     volatile uint32_t PSELTXD;
     volatile uint32_t PSELCTS;
     volatile uint32_t PSELRXD;
     volatile uint32_t RXD;
     volatile uint32_t TXD;
-    volatile uint32_t RESERVED7;
+    volatile uint32_t RESERVED10[1];
     volatile uint32_t BAUDRATE;
-    volatile uint32_t RESERVED8[17];
+    volatile uint32_t RESERVED11[17];
     volatile uint32_t CONFIG;
 } NRF_UART_REG;
+
 
 #define UART_TX_PIN 6
 #define UART_RX_PIN 8
@@ -53,7 +61,7 @@ void uart_init() {
     UART->PSELRTS = 0xFFFFFFFF;
     UART->PSELCTS = 0xFFFFFFFF;
 
-    UART->BAUDRATE = 0x00275000; 
+    UART->BAUDRATE = 9600; 
 
     // Aktiver UART
     UART->ENABLE = 4; 

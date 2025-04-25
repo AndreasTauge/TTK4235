@@ -69,20 +69,20 @@ int button1_pressed = !(GPIO->IN & (1 << __BUTTON_1_PIN__));
 int button2_pressed = !(GPIO->IN & (1 << __BUTTON_2_PIN__));
 if(button1_pressed){
 	uart_send('A');
-	leds_on = 0;
 }
 else if(button2_pressed){
 	uart_send('B');
-	leds_on = 1;
 }
 
 
 if (uart_read() != '\0'){
 	if(	leds_on ){
 		GPIO->OUTCLR = (0b1111 << 17);
+		leds_on = 0;
 	}
 	else if ( !leds_on ){
 		GPIO->OUTSET = (0b1111 << 17);
+		leds_on = 1;
 	}
 }}}
 
