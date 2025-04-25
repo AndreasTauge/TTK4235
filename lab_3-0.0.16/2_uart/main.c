@@ -1,7 +1,6 @@
 #include "uart.h"
 #include <stdint.h>
-
-#include <stdint.h>
+#include <sys/types.h> 
 
 //BUTTONS1,4 = P0.13,16
 #define __BUTTON_1_PIN__ 13
@@ -45,6 +44,15 @@ void button_init(){
 	GPIO->PIN_CNF[__BUTTON_4_PIN__] = (2 << 2);
 }
 
+ssize_t _write(int fd, const void *buf, size_t count){
+	char * letter = (char *)(buf);
+	for(int i = 0; i < count; i++){
+	uart_send(*letter);
+	letter++;
+	}
+	return count;
+}
+
 int main () {
 
 button_init();
@@ -69,7 +77,7 @@ if (uart_read() != '\0'){
 	else if (GPIO->OUTSET == (0b1111 << 17)){
 		GPIO->OUTCLR = (0b1111 << 17);
 	}
-}}
+}}}
 
 void uart_send_str(char ** str){
 	UART->TASKS_STARTTX = 1;
