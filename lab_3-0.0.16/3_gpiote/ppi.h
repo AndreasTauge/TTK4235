@@ -4,6 +4,8 @@
 
 #define PPI ((NRF_PPI_REG*)0x4001F000)
 
+void ppi_init(void);
+
 typedef struct {
 	uint32_t EN;
 	uint32_t DIS;

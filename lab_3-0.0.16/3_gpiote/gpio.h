@@ -4,6 +4,8 @@
 
 #define GPIO ((NRF_GPIO_REG*)0x50000000)
 
+void gpio_init(void);
+
 typedef struct {
 	volatile uint32_t RESERVED0[321];
 	volatile uint32_t OUT;

@@ -1,5 +1,5 @@
 FAMILY := nrf52
-SOURCES := SOURCES := \
+SOURCES := \
     main.c \
     gpio.c \
     gpiote.c \

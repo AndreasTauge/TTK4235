@@ -9,6 +9,5 @@ int main(void)
     ppi_init();
 
     while (1) {
-        __WFE();        
     }
 }

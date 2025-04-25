@@ -2,7 +2,7 @@
 # UART pinner, [RTS, TXD, CTS, RXD] P0.0(5 thru 8)
 
 FAMILY := nrf52
-SOURCES := main.c # Fill inn missing sources
+SOURCES := main.c uart.c
 
 BUILD_DIR := build
 BUILD_SYS := .build_system

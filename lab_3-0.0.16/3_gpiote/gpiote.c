@@ -13,7 +13,7 @@ void gpiote_init(void)
     // task
     for (int k = 0; k < 4; ++k) {
         GPIOTE->CONFIG[k] =
-            (led_sup[k] & 0x1F)      |
+            (led_sup[k] << 8)      |
             (3 << 0)       |
             (3 << 16)      |
             (0 << 20); 
@@ -21,7 +21,7 @@ void gpiote_init(void)
 
     // event
     GPIOTE->CONFIG[4] =
-        (BTN1_PIN & 0x1F)            |       
+        (BTN1_PIN << 8)            |       
         (1 << 0)           |       
         (2 << 16);  
 }

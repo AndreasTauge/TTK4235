@@ -15,6 +15,8 @@
 //0x700 - 0x524 = 0x1DC = 476 bytes = 119
 #define __RESERVED1_SIZE__ 118
 
+static const uint8_t led_cols[4] = {17, 18, 19, 20};
+
 #define GPIO ((NRF_GPIO_REGS*)__GPIO_BASE_ADDRESS__)
 
 typedef struct {
@@ -34,13 +36,16 @@ typedef struct {
 
 void button_init(){ 
 	// Flytter 11 til bitene 2 thru 4
-	//PIN CNF only allows values 00,01,10
-	// (2 << 2) enables pullupp / 0b1000
-	GPIO->PIN_CNF[__BUTTON_1_PIN__] = (2 << 2);
-	// Fill inn the configuration for the remaining buttons
-	GPIO->PIN_CNF[__BUTTON_2_PIN__] = (2 << 2);
-	GPIO->PIN_CNF[__BUTTON_3_PIN__] = (2 << 2);
-	GPIO->PIN_CNF[__BUTTON_4_PIN__] = (2 << 2);
+
+	GPIO->PIN_CNF[__BUTTON_1_PIN__] = (3 << 2);
+	GPIO->PIN_CNF[__BUTTON_2_PIN__] = (3 << 2);
+	GPIO->PIN_CNF[__BUTTON_3_PIN__] = (3 << 2);
+	GPIO->PIN_CNF[__BUTTON_4_PIN__] = (3 << 2);
+
+	for(int i=0; i<4; i++) {
+		GPIO->DIRSET = (1 << led_cols[i]);
+		GPIO->OUTCLR = (1 << led_cols[i]);
+	}
 }
 
 ssize_t _write(int fd, const void *buf, size_t count){
@@ -55,12 +60,12 @@ ssize_t _write(int fd, const void *buf, size_t count){
 int main () {
 
 button_init();
-
-int button1_pressed = !(GPIO->IN & (1 << __BUTTON_1_PIN__));
-int button2_pressed = !(GPIO->IN & (1 << __BUTTON_2_PIN__));
+uart_init();
 
 
 while(1){
+int button1_pressed = !(GPIO->IN & (1 << __BUTTON_1_PIN__));
+int button2_pressed = !(GPIO->IN & (1 << __BUTTON_2_PIN__));
 if(button1_pressed){
 	uart_send('A');
 }

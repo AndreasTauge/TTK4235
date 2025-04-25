@@ -41,23 +41,22 @@ typedef struct {
 #define UART_RX_PIN 8
 
 void uart_init() {
-    // Konfigurer GPIO for UART TX (output) og UART RX (input)
+    // Konfigurer GPIO for output og input
     GPIO->PIN_CNF[UART_TX_PIN] = (1 << 0); // Output
     GPIO->PIN_CNF[UART_RX_PIN] = (0 << 0); // Input
 
-    // Koble GPIO-pinnene til UART-modulen
+    // Koble GPIO-pinnene til UART
     UART->PSELTXD = UART_TX_PIN;
     UART->PSELRXD = UART_RX_PIN;
 
-    // Deaktiver RTS og CTS (flow control)
+    // Deaktiver RTS og CTS
     UART->PSELRTS = 0xFFFFFFFF;
     UART->PSELCTS = 0xFFFFFFFF;
 
-    // Sett baudrate til 9600
-    UART->BAUDRATE = 9600; //0x00275000
+    UART->BAUDRATE = 9600; 
 
     // Aktiver UART
-    UART->ENABLE = 8; //previously set to 4
+    UART->ENABLE = 8; 
 
     // Start mottak
     UART->TASKS_STARTRX = 1;

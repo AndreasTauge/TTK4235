@@ -8,7 +8,7 @@ void ppi_init(void)
 
     // set one channel adress for each led and enable it 
     for (int ch = 0; ch < 4; ++ch) {
-        uint32_t led_task = (uint32_t)&GPIOTE->TASKS_OUT[0];
+        uint32_t led_task = (uint32_t)&GPIOTE->TASKS_OUT[ch];
 
         PPI->PPI_CH[ch].EEP = btn_evt;   
         PPI->PPI_CH[ch].TEP = led_task;  
