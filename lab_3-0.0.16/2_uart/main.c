@@ -33,7 +33,6 @@ typedef struct {
 } NRF_GPIO_REGS;
 
 void button_init(){ 
-	// Chat seier (2 << 2) er riktig for å Enable pull-upp for BUTTON X
 	// Flytter 11 til bitene 2 thru 4
 	//PIN CNF only allows values 00,01,10
 	// (2 << 2) enables pullupp / 0b1000
@@ -79,13 +78,3 @@ if (uart_read() != '\0'){
 	}
 }}}
 
-void uart_send_str(char ** str){
-	UART->TASKS_STARTTX = 1;
-	char * letter_ptr = *str;
-	while(*letter_ptr != '\0'){
-		UART->TXD = *letter_ptr;
-		while(!UART->EVENTS_TXDRDY);
-		UART->EVENTS_TXDRDY = 0;
-		letter_ptr++;
-}
-}

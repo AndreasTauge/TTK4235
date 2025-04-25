@@ -81,3 +81,14 @@ char uart_read(){
 
 	return UART->RXD;
 }
+
+void uart_send_str(char ** str){
+	UART->TASKS_STARTTX = 1;
+	char * letter_ptr = *str;
+	while(*letter_ptr != '\0'){
+		UART->TXD = *letter_ptr;
+		while(!UART->EVENTS_TXDRDY);
+		UART->EVENTS_TXDRDY = 0;
+		letter_ptr++;
+}
+}
