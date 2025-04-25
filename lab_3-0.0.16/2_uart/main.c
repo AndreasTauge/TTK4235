@@ -1,5 +1,6 @@
 #include "uart.h"
 #include <stdint.h>
+#include <stdio.h>
 #include <sys/types.h> 
 
 //BUTTONS1,4 = P0.13,16
@@ -59,30 +60,34 @@ ssize_t _write(int fd, const void *buf, size_t count){
 
 int main () {
 
-button_init();
-uart_init();
-int leds_on = 0;
+	uart_init();
+	button_init();
+	int leds_on = 0;
+
+	iprintf("The average grade in TTK%d was in %d was: %c\n\r", 4235, 2022, 'B');
 
 
-while(1){
-int button1_pressed = !(GPIO->IN & (1 << __BUTTON_1_PIN__));
-int button2_pressed = !(GPIO->IN & (1 << __BUTTON_2_PIN__));
-if(button1_pressed){
-	uart_send('A');
-	leds_on = 0;
-}
-else if(button2_pressed){
-	uart_send('B');
-	leds_on = 1;
-}
+	while(1){
+		int button1_pressed = !(GPIO->IN & (1 << __BUTTON_1_PIN__));
+		int button2_pressed = !(GPIO->IN & (1 << __BUTTON_2_PIN__));
+		if(button1_pressed){
+			uart_send('A');
+		}
+		else if(button2_pressed){
+			uart_send('B');
+		}
 
 
-if (uart_read() != '\0'){
-	if(	leds_on ){
-		GPIO->OUTCLR = (0b1111 << 17);
+		if (uart_read() != '\0'){
+			if(	leds_on ){
+				GPIO->OUTCLR = (0b1111 << 17);
+				leds_on = 0;
+			}
+			else if ( !leds_on ){
+				GPIO->OUTSET = (0b1111 << 17);
+				leds_on = 1;
+			}
+		}
 	}
-	else if ( !leds_on ){
-		GPIO->OUTSET = (0b1111 << 17);
-	}
-}}}
+}
 
