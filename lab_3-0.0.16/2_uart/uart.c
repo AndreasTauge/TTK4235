@@ -61,7 +61,7 @@ void uart_init() {
     UART->PSELRTS = 0xFFFFFFFF;
     UART->PSELCTS = 0xFFFFFFFF;
 
-    UART->BAUDRATE = 9600; 
+    UART->BAUDRATE = 0x00275000; 
 
     UART->ENABLE = 4; 
 
